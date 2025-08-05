@@ -47,7 +47,7 @@ RUN ninja -C libcamera/build/ install && ldconfig
 # Install kmsxx from source
 RUN git clone https://github.com/tomba/kmsxx.git
 RUN meson setup kmsxx/build kmsxx/
-RUN ninja -C kmsxx/build/ install 
+RUN ninja -C kmsxx/build/ install && ldconfig
 
 # Add the new installations to the python path so that picamera2 can find them
 ENV PYTHONPATH=${PYTHONPATH}/usr/local/lib/aarch64-linux-gnu/python3.10/site-packages:/app/kmsxx/build/py
