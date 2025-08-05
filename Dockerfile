@@ -5,7 +5,7 @@ RUN apt update && apt install -y --no-install-recommends gnupg
 RUN apt update && apt -y upgrade
 
 RUN apt update && apt install -y --no-install-recommends \
-        meson \
+        # meson \
 		ninja-build \
 		pkg-config \
 		libyaml-dev \
@@ -24,23 +24,25 @@ RUN apt update && apt install -y --no-install-recommends \
 
 WORKDIR /app
 
+RUN pip3 install meson>=0.63
 # Install libcamera from source: https://emanual.robotis.com/docs/en/platform/turtlebot3/sbc_setup/#sbc-setup 
 # RUN git clone https://github.com/raspberrypi/libcamera.git && cd libcamera && git checkout 6ddd79b && cd ..
 # RUN meson setup libcamera/build libcamera/
 # RUN ninja -C libcamera/build/ install
-
-RUN git clone https://github.com/raspberrypi/libcamera.git && cd libcamera
-RUN meson setup libcamera/build --buildtype=release -Dpipelines=rpi/vc4,rpi/pisp -Dipas=rpi/vc4,rpi/pisp -Dv4l2=true -Dgstreamer=enabled -Dtest=false -Dlc-compliance=disabled -Dcam=disabled -Dqcam=disabled -Ddocumentation=disabled -Dpycamera=enabled
-RUN ninja -C libcamera/build/ install && ldconfig
 
 # Install camera_ros
 RUN apt update && apt install -y --no-install-recommends \
 		python3-pip git python3-jinja2 \
 		libboost-dev libgnutls28-dev openssl libtiff-dev pybind11-dev \
 		qtbase5-dev libqt5core5a libqt5widgets5 meson cmake \
-		python3-yaml python3-ply \
+		python3-yaml python3-ply libglib2.0-dev libgstreamer-plugins-base1.0-dev\
         ros-humble-camera-ros \
 	&& rm -rf /var/lib/apt/lists/*
+
+
+RUN git clone https://github.com/raspberrypi/libcamera.git && cd libcamera
+RUN meson setup libcamera/build libcamera/ --buildtype=release -Dpipelines=rpi/vc4,rpi/pisp -Dipas=rpi/vc4,rpi/pisp -Dv4l2=true -Dgstreamer=enabled -Dtest=false -Dlc-compliance=disabled -Dcam=disabled -Dqcam=disabled -Ddocumentation=disabled -Dpycamera=enabled
+RUN ninja -C libcamera/build/ install && ldconfig
 
 # Install kmsxx from source
 RUN git clone https://github.com/tomba/kmsxx.git
