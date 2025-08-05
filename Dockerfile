@@ -24,19 +24,16 @@ RUN apt update && apt install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Install libcamera from source
-RUN git clone https://github.com/raspberrypi/libcamera.git && cd libcamera && git checkout 6ddd79b && cd ..
-RUN meson setup libcamera/build libcamera/
-RUN ninja -C libcamera/build/ install
+# Install libcamera from source: https://emanual.robotis.com/docs/en/platform/turtlebot3/sbc_setup/#sbc-setup 
+# RUN git clone https://github.com/raspberrypi/libcamera.git && cd libcamera && git checkout 6ddd79b && cd ..
+# RUN meson setup libcamera/build libcamera/
+# RUN ninja -C libcamera/build/ install
+
+RUN git clone https://github.com/raspberrypi/libcamera.git && cd libcamera
+RUN meson setup libcamera/build --buildtype=release -Dpipelines=rpi/vc4,rpi/pisp -Dipas=rpi/vc4,rpi/pisp -Dv4l2=true -Dgstreamer=enabled -Dtest=false -Dlc-compliance=disabled -Dcam=disabled -Dqcam=disabled -Ddocumentation=disabled -Dpycamera=enabled
+RUN ninja -C libcamera/build/ install && ldconfig
 
 # Install camera_ros
-# RUN mkdir -p /camera_ws/src && cd /camera_ws \
-# 	&& git clone https://github.com/christianrauch/camera_ros.git
-# # resolve binary dependencies and build workspace
-# RUN . /opt/ros/$ROS_DISTRO/setup.sh \
-# 	&& cd /camera_ws/ \
-# 	&& rosdep install -y --from-paths src --ignore-src --rosdistro $ROS_DISTRO --skip-keys=libcamera \
-# 	&& colcon build --event-handlers=console_direct+
 RUN apt update && apt install -y --no-install-recommends \
 		python3-pip git python3-jinja2 \
 		libboost-dev libgnutls28-dev openssl libtiff-dev pybind11-dev \
