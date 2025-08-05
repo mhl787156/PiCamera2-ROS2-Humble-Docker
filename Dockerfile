@@ -66,4 +66,4 @@ COPY camera_test /app/camera_test
 COPY run.sh /run.sh
 
 # Set the entry point. You can comment this out to use your own test scripts...
-CMD ["./run.sh"]
+CMD ["/run.sh"]
