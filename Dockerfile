@@ -40,7 +40,7 @@ RUN apt update && apt install -y --no-install-recommends \
 	&& rm -rf /var/lib/apt/lists/*
 
 
-RUN git clone https://github.com/raspberrypi/libcamera.git && cd libcamera
+RUN git clone https://github.com/raspberrypi/libcamera.git -b v0.5.1
 RUN meson setup libcamera/build libcamera/ --buildtype=release -Dpipelines=rpi/vc4,rpi/pisp -Dipas=rpi/vc4,rpi/pisp -Dv4l2=true -Dgstreamer=enabled -Dtest=false -Dlc-compliance=disabled -Dcam=disabled -Dqcam=disabled -Ddocumentation=disabled -Dpycamera=enabled
 RUN ninja -C libcamera/build/ install && ldconfig
 
@@ -53,7 +53,7 @@ RUN ninja -C kmsxx/build/ install
 ENV PYTHONPATH=${PYTHONPATH}/usr/local/lib/aarch64-linux-gnu/python3.10/site-packages:/app/kmsxx/build/py
 
 # Finally install picamera2 using pip
-RUN pip3 install picamera2
+# RUN pip3 install picamera2
 
 # Setting HOST_UID and running under ros user (mirroring host user id) to enable ros communication with host machine
 ARG HOST_UID=1000 
