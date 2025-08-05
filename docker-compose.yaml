@@ -1,0 +1,9 @@
+services:
+  livox: 
+    image: pi-camera-ros-driver
+    network_mode: host
+    pid: host
+    ipc: host
+    privileged: true
+    volumes:
+      - /run/udev:/run/udev
