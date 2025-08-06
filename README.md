@@ -2,6 +2,9 @@
 
 This repository provides an example of how to integrate the original Raspberry Pi camera with a **Raspberry Pi 5** using a Docker container running ROS2 "Humble". The `picamera2` library, which is primarily developed for Raspberry Pi OS, neends some additional dependencies to work properly within a Docker container based on the ROS2 `ros:humble` image (which is based on Ubuntu 22.04).
 
+Also See this example for docker:
+- https://github.com/se1exin/camera_ros-in-docker-rpi5/tree/master 
+
 
 ## Table of Contents
 - [Introduction](#introduction)
