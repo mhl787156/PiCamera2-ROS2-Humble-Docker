@@ -32,17 +32,38 @@ RUN pip3 install meson>=0.63
 
 # Install camera_ros
 RUN apt update && apt install -y --no-install-recommends \
-		python3-pip git python3-jinja2 \
+		python3-pip git python3-jinja2 python3-colcon-meson \
 		libboost-dev libgnutls28-dev openssl libtiff-dev pybind11-dev \
 		qtbase5-dev libqt5core5a libqt5widgets5 meson cmake \
 		python3-yaml python3-ply libglib2.0-dev libgstreamer-plugins-base1.0-dev\
-        ros-humble-camera-ros \
 	&& rm -rf /var/lib/apt/lists/*
-
 
 RUN git clone https://github.com/raspberrypi/libcamera.git -b v0.5.1
 RUN meson setup libcamera/build libcamera/ --buildtype=release -Dpipelines=rpi/vc4,rpi/pisp -Dipas=rpi/vc4,rpi/pisp -Dv4l2=true -Dgstreamer=enabled -Dtest=false -Dlc-compliance=disabled -Dcam=disabled -Dqcam=disabled -Ddocumentation=disabled -Dpycamera=enabled
 RUN ninja -C libcamera/build/ install && ldconfig
+
+# create workspace
+RUN mkdir -p /camera_ws/src \
+	&& cd /camera_ws/src \
+
+	# check out libcamera
+	# apt -y install python3-colcon-meson
+	# Option A: official upstream
+	# git clone https://git.libcamera.org/libcamera/libcamera.git
+	# Option B: raspberrypi fork with support for newer camera modules
+	# && git clone https://github.com/raspberrypi/libcamera.git -b v0.5.1 \
+
+	# check out this camera_ros repository
+	&& git clone https://github.com/christianrauch/camera_ros.git \
+
+	# resolve binary dependencies and build workspace
+	&& . /opt/ros/$ROS_DISTRO/setup.sh \
+	&& cd /camera_ws/ \
+	&& apt update \
+	&& rosdep install -y --from-paths src --ignore-src --rosdistro $ROS_DISTRO --skip-keys=libcamera \
+	&& rm -rf /var/lib/apt/lists/* \
+	&& colcon build --event-handlers=console_direct+ 
+
 
 # Install kmsxx from source
 RUN git clone https://github.com/tomba/kmsxx.git
